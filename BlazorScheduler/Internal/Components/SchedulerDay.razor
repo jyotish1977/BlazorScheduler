@@ -1,0 +1,12 @@
+﻿@namespace BlazorScheduler.Internal.Components
+
+<div class="day @Classes.AsString()" @onmousedown="OnMouseDown" data-date="@Day.Date.ToString("yyyyMMdd")">
+    @if (Scheduler.DayTemplate != null)
+    {
+        @Scheduler.DayTemplate(Day)
+    }
+    else
+    {
+        <span style="background-color: @Color;">@DateText</span>
+    }
+</div>
