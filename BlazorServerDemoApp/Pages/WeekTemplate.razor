@@ -17,12 +17,19 @@
         @foreach (var app in _appointments)
         {
             <Appointment Start="@app.Start" End="@app.End" Color="@app.Color">
-                @app.Title
+                @*@app.Title*@
+                @app.JobId
             </Appointment>}
     </Appointments>
 </Scheduler>
 
+
+
+
+
+
 @code {
+
     private List<AppointmentDto> _appointments = new();
 
     protected override void OnInitialized()
@@ -31,7 +38,8 @@
         {
             var app = new AppointmentDto
             {
-                Title = "Appointment",
+                //Title = "Appointment",
+                JobId = "Job",
                 Start = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
                 End = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
                 Color = "aqua"
@@ -43,7 +51,8 @@
 
     Task OnAddingNewAppointment(DateTime start, DateTime end)
     {
-        _appointments.Add(new AppointmentDto { Start = start, End = end.AddDays(7), Title = "A newly added appointment!", Color = "aqua" });
+        //_appointments.Add(new AppointmentDto { Start = start, End = end.AddDays(7), Title = "A newly added appointment!", Color = "aqua" });
+        _appointments.Add(new AppointmentDto { Start = start, End = end.AddDays(7), JobId = "A newly added Job!", Color = "aqua" });
         return Task.CompletedTask;
     }
 
@@ -53,7 +62,8 @@
     }
     void AddApp(DateTime day)
     {
-        _appointments.Add(new AppointmentDto { Start = day, End = day.AddDays(7), Title = "A newly added appointment!", Color = "pink" });
+        //_appointments.Add(new AppointmentDto { Start = day, End = day.AddDays(7), Title = "A newly added appointment!", Color = "pink" });
+        _appointments.Add(new AppointmentDto { Start = day, End = day.AddDays(7), JobId = "A newly added Job!", Color = "pink" });
     }
 
     string GetBGColorForDate(DateTime day)

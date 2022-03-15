@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using BlazorScheduler.Internal.Extensions;
 using BlazorScheduler.Internal.Components;
 using System.Collections.ObjectModel;
- 
+
 
 namespace BlazorScheduler
 {
@@ -16,7 +16,7 @@ namespace BlazorScheduler
         [Parameter] public RenderFragment Appointments { get; set; } = null!;
         [Parameter] public RenderFragment<Scheduler>? HeaderTemplate { get; set; }
         [Parameter] public RenderFragment<DateTime>? DayTemplate { get; set; }
-        
+
         [Parameter] public Func<DateTime, DateTime, Task>? OnRequestNewData { get; set; }
         [Parameter] public Func<DateTime, DateTime, Task>? OnAddingNewAppointment { get; set; }
         [Parameter] public Func<DateTime, Task>? OnOverflowAppointmentClick { get; set; }
@@ -94,7 +94,7 @@ namespace BlazorScheduler
         internal void RemoveAppointment(Appointment appointment)
         {
             _appointments.Remove(appointment);
-           //StateHasChanged();
+            //StateHasChanged();
         }
 
         public async Task SetCurrentMonth(DateTime date, bool skipJsInvoke = false)

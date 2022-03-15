@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace BlazorScheduler.Internal.Components
 {
-	public partial class SchedulerWeek
+    public partial class SchedulerWeek
     {
         [CascadingParameter] public Scheduler Scheduler { get; set; } = null!;
 
@@ -14,7 +14,7 @@ namespace BlazorScheduler.Internal.Components
         [Parameter] public DateTime End { get; set; }
         [Parameter] public IEnumerable<Appointment> Appointments { get; set; } = null!;
 
-		private int MaxNumOfAppointmentsPerDay => Scheduler.MaxVisibleAppointmentsPerDay;
+        private int MaxNumOfAppointmentsPerDay => Scheduler.MaxVisibleAppointmentsPerDay;
 
         private readonly Dictionary<Appointment, int> _orderings = new();
         private readonly Dictionary<Appointment, (int, int)> _startsAndEnds = new();

@@ -27,8 +27,7 @@
                 <MudSelect Label="Start Day of Week" @bind-Value="_startDayOfWeek">
                     @foreach (var day in Enum.GetValues<DayOfWeek>())
                     {
-                        <MudSelectItem Value="@day" />
-                    }
+<MudSelectItem Value="@day" />}
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" md="6">
@@ -45,63 +44,61 @@
     </MudCardContent>
 </MudCard>
 
-<Scheduler
-    @ref="_scheduler"
-    OnAddingNewAppointment="OnAddingNewAppointment"
-    AlwaysShowYear="_alwaysShowYear"
-    MaxVisibleAppointmentsPerDay="_maxVisibleAppointmentsPerDay"
-    EnableDragging="_enableDragging"
-    EnableRescheduling="_enableRescheduling"
-    ThemeColor="@_themeColor"
-    StartDayOfWeek="_startDayOfWeek"
-    TodayButtonText="@_todayButtonText"
-    PlusOthersText="@_plusOthersText">
+<Scheduler @ref="_scheduler"
+           OnAddingNewAppointment="OnAddingNewAppointment"
+           AlwaysShowYear="_alwaysShowYear"
+           MaxVisibleAppointmentsPerDay="_maxVisibleAppointmentsPerDay"
+           EnableDragging="_enableDragging"
+           EnableRescheduling="_enableRescheduling"
+           ThemeColor="@_themeColor"
+           StartDayOfWeek="_startDayOfWeek"
+           TodayButtonText="@_todayButtonText"
+           PlusOthersText="@_plusOthersText">
     <Appointments>
         @foreach (var app in _appointments)
         {
-            <Appointment Start="@app.Start" End="@app.End" Color="@app.Color" OnReschedule="(start, end) => HandleReschedule(app, start, end)">
-                @app.Title
-            </Appointment>
-        }
+<Appointment Start="@app.Start" End="@app.End" Color="@app.Color" OnReschedule="(start, end) => HandleReschedule(app, start, end)">
+    @*@app.Title*@
+    @app.JobId
+</Appointment>}
     </Appointments>
 </Scheduler>
 
-@code {
-    private List<AppointmentDto> _appointments = new();
+@code { private List<AppointmentDto> _appointments = new();
 
-    private Scheduler _scheduler;
+            private Scheduler _scheduler;
 
-    private bool _alwaysShowYear = true;
-    private int _maxVisibleAppointmentsPerDay = 5;
-    private bool _enableDragging = true;
-    private bool _enableRescheduling = false;
-    private string _themeColor = "aqua";
-    private DayOfWeek _startDayOfWeek = DayOfWeek.Sunday;
-    private string _todayButtonText = "Today";
-    private string _plusOthersText = "+ {n} others";
+            private bool _alwaysShowYear = true;
+            private int _maxVisibleAppointmentsPerDay = 5;
+            private bool _enableDragging = true;
+            private bool _enableRescheduling = false;
+            private string _themeColor = "aqua";
+            private DayOfWeek _startDayOfWeek = DayOfWeek.Sunday;
+            private string _todayButtonText = "Today";
+            private string _plusOthersText = "+ {n} others";
 
-    Task OnAddingNewAppointment(DateTime start, DateTime end)
-    {
-        _appointments.Add(new AppointmentDto { Start = start, End = end, Title = "A newly added appointment!", Color = "aqua" });
-        return Task.CompletedTask;
-    }
+            Task OnAddingNewAppointment(DateTime start, DateTime end)
+            {
+                //_appointments.Add(new AppointmentDto { Start = start, End = end, Title = "A newly added appointment!", Color = "aqua" });
+                _appointments.Add(new AppointmentDto { Start = start, End = end, JobId = "A newly added Job!", Color = "aqua" });
+                return Task.CompletedTask;
+            }
 
-    Task HandleReschedule(AppointmentDto appointment, DateTime newStart, DateTime newEnd)
-    {
-        appointment.Start = newStart;
-        appointment.End = newEnd;
+            Task HandleReschedule(AppointmentDto appointment, DateTime newStart, DateTime newEnd)
+            {
+                appointment.Start = newStart;
+                appointment.End = newEnd;
 
-        return Task.CompletedTask;
-    }
+                return Task.CompletedTask;
+            }
 
-    void AddAppointments()
-    {
-        var newAppointments = AppointmentService.GetAppointments(_scheduler.CurrentRange.Start, _scheduler.CurrentRange.End);
-        _appointments.AddRange(newAppointments);
-    }
+            void AddAppointments()
+            {
+                var newAppointments = AppointmentService.GetAppointments(_scheduler.CurrentRange.Start, _scheduler.CurrentRange.End);
+                _appointments.AddRange(newAppointments);
+            }
 
-    void ClearAppointments()
-    {
-        _appointments.Clear();
-    }
-}
+            void ClearAppointments()
+            {
+                _appointments.Clear();
+            } }

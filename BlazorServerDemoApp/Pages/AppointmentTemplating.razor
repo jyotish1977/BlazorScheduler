@@ -4,22 +4,20 @@
     <Appointments>
         @foreach (var appGroup in _appointments.GroupBy(x => new { x.Start, x.End }))
         {
-            <Appointment Start="@appGroup.Key.Start" End="@appGroup.Key.End">
-                <div style="font-weight: bold; color: green; border: 1px solid black; border-radius: 4px; padding-left: 3px;">
-                    <span class="oi oi-book" aria-hidden="true"></span>
-                    @string.Join(", ", appGroup.Select(x => x.Name))
-                </div>
-            </Appointment>
-        }
+<Appointment Start="@appGroup.Key.Start" End="@appGroup.Key.End">
+    <div style="font-weight: bold; color: green; border: 1px solid black; border-radius: 4px; padding-left: 3px;">
+        <span class="oi oi-book" aria-hidden="true"></span>
+        @string.Join(", ", appGroup.Select(x => x.Name))
+    </div>
+</Appointment>}
     </Appointments>
 </Scheduler>
 
-@code {
-    private List<BoardingReservation> _appointments = new();
+@code { private List<BoardingReservation> _appointments = new();
 
-    protected override void OnInitialized()
-    {
-        _appointments.AddRange(new List<BoardingReservation> {
+            protected override void OnInitialized()
+            {
+                _appointments.AddRange(new List<BoardingReservation> {
             new BoardingReservation
             {
                 Name = "Bella",
@@ -81,12 +79,11 @@
                 End = DateTime.Today.AddDays(13),
             }
         });
-    }
+            }
 
-    public class BoardingReservation
-    {
-        public string Name { get; set; }
-        public DateTime Start { get; set; }
-        public DateTime End { get; set; }
-    }
-}
+            public class BoardingReservation
+            {
+                public string Name { get; set; }
+                public DateTime Start { get; set; }
+                public DateTime End { get; set; }
+            } }

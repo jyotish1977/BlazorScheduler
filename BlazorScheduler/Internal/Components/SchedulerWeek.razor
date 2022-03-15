@@ -4,8 +4,7 @@
     <div class="days">
         @for (var dt = Start; dt <= End; dt = dt.AddDays(1))
         {
-            <SchedulerDay Day="dt" @key="dt" />
-        }
+<SchedulerDay Day="dt" @key="dt" />}
     </div>
     <div class="appointments">
         @foreach (var (appointment, order) in _orderings)
@@ -18,15 +17,13 @@
                 bool isTimedAppointment = appointment.Start.Date == appointment.End.Date && appointment.Start != appointment.End;
                 if (isTimedAppointment)
                 {
-                    <SchedulerAppointment Appointment="appointment" Order="order" @key="appointment" />
-                }
-                else
-                {
-                    var (start, end) = _startsAndEnds[appointment];
-                    <SchedulerAllDayAppointment Appointment="appointment" Order="order" Start="start" End="end" @key="appointment" />
+<SchedulerAppointment Appointment="appointment" Order="order" @key="appointment" /> }
+                    else
+                    {
+                        var (start, end) = _startsAndEnds[appointment];
+<SchedulerAllDayAppointment Appointment="appointment" Order="order" Start="start" End="end" @key="appointment" />}
                 }
             }
-        }
         @for (var dt = Start; dt <= End; dt = dt.AddDays(1))
         {
             var todaysAppointments = _orderings.Where(x => dt.Between(x.Key.Start.Date, x.Key.End.Date) && !Scheduler.IsDayBeingScheduled(x.Key));
@@ -35,12 +32,11 @@
             {
                 var numOverFlowAppointments = todaysAppointments
                 .Count(x => x.Value > MaxNumOfAppointmentsPerDay - 1);
-                <SchedulerAppointmentOverflow Day="dt"
-                    AppointmentCount="numOverFlowAppointments"
-                    Start="(dt.DayOfWeek - Scheduler.StartDayOfWeek + 7) % 7"
-                    Order="MaxNumOfAppointmentsPerDay"
-                    @key="dt" />
+<SchedulerAppointmentOverflow Day="dt"
+                              AppointmentCount="numOverFlowAppointments"
+                              Start="(dt.DayOfWeek - Scheduler.StartDayOfWeek + 7) % 7"
+                              Order="MaxNumOfAppointmentsPerDay"
+                              @key="dt" />}
             }
-        }
     </div>
 </div>

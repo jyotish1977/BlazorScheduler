@@ -1,0 +1,27 @@
+﻿@using System.Globalization;
+@using Microsoft.JSInterop
+@inherits BlazComponent
+@typeparam TItem
+@implements IScheduler
+
+@if (Visible)
+{
+    <CascadingValue Value="@this">
+        @ChildContent
+    </CascadingValue>
+    <div @ref=Element style=@Style @attributes=@Attributes class=@GetCssClass() id=@GetId()>
+        <div class="rz-scheduler-nav">
+            <div class="rz-scheduler-nav-prev-next">
+                <button class="rz-button rz-prev" @onclick=@OnPrev></button>
+                <button class="rz-button rz-next" @onclick=@OnNext></button>
+                <button class="rz-button rz-today" @onclick=@OnToday>@TodayText</button>
+            </div>
+            <div class="rz-scheduler-nav-title">@SelectedView?.Title</div>
+            <div class="rz-scheduler-nav-views">
+                @foreach (var view in Views)
+                {
+                    <button class="@($"rz-button{(IsSelected(view)? " rz-state-active" : "")}")" @onclick=@(args => OnChangeView(view))><span>@view.Text</span></button>}
+            </div>
+        </div>
+        @SelectedView?.Render()
+    </div>}
