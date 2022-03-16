@@ -24,6 +24,10 @@ namespace BlazorScheduler.Components
         /// </summary>
         /// <value>The text.</value>
         public string Text { get; set; }
+
+        public string JobId { get; set; }
+
+        public string Name { get; set; }
         /// <summary>
         /// Gets or sets the data associated with the appointment
         /// </summary>

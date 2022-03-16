@@ -1,27 +1,39 @@
 ﻿@page "/week"
+@using BlazorScheduler.Components
+@inject AppointmentService AppointmentService
+@inject IDialogService DialogService
 
-<Scheduler OnAddingNewAppointment="OnAddingNewAppointment">
-    <DayTemplate>
-        <div style="height: 100%; background-color: @GetBGColorForDate(context);">
-            <span>@context.Date.ToString("dd")</span>
-            <div class="d-inline float-right">
-                @if (GetAppointmentsForDay(context).Count() >= 3)
-                {
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Class="mr-1" OnClick="() => ClearDay(context)" @onmousedown:stopPropagation="true" />}
-                <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="() => AddApp(context)" @onmousedown:stopPropagation="true" />
+<BlazScheduler @ref=@scheduler SlotRender=@OnSlotRender style="height: 768px;" TItem="AppointmentDto" Data=@_appointments StartProperty="Start" EndProperty="End" TextProperty="Text" JobIdProperty="JobId" NameProperty="Name" SelectedIndex="2"
+               OnRequestNewData="OnRequestNewData" OnAddingNewAppointment="OnAddingNewAppointment" OnOverflowAppointmentClick="OnOverflowAppointmentClick"
+               SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender>
+
+    
+        <BlazDayView />
+        <BlazWeekView />
+        <BlazMonthView />
+</BlazScheduler>
+
+@*<Scheduler OnAddingNewAppointment="OnAddingNewAppointment">
+        <DayTemplate>
+            <div style="height: 100%; background-color: @GetBGColorForDate(context);">
+                <span>@context.Date.ToString("dd")</span>
+                <div class="d-inline float-right">
+                    @if (GetAppointmentsForDay(context).Count() >= 3)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Class="mr-1" OnClick="() => ClearDay(context)" @onmousedown:stopPropagation="true" />}
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="() => AddApp(context)" @onmousedown:stopPropagation="true" />
+                </div>
             </div>
-        </div>
-    </DayTemplate>
+        </DayTemplate>
 
-    <Appointments>
-        @foreach (var app in _appointments)
-        {
-            <Appointment Start="@app.Start" End="@app.End" Color="@app.Color">
-                @*@app.Title*@
-                @app.JobId
-            </Appointment>}
-    </Appointments>
-</Scheduler>
+        <Appointments>
+            @foreach (var app in _appointments)
+            {
+                <Appointment Start="@app.Start" End="@app.End" Color="@app.Color">
+                    @app.JobId
+                </Appointment>}
+        </Appointments>
+    </Scheduler>*@
 
 
 
@@ -30,35 +42,84 @@
 
 @code {
 
-    private List<AppointmentDto> _appointments = new();
-
-    protected override void OnInitialized()
+    async Task OnRequestNewData(DateTime start, DateTime end)
     {
-        for (int i = 1; i < DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month); i++)
-        {
-            var app = new AppointmentDto
-            {
-                //Title = "Appointment",
-                JobId = "Job",
-                Start = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
-                End = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
-                Color = "aqua"
-            };
-            _appointments.AddRange(Enumerable.Repeat(app, new Random().Next(0, 5)));
-        }
-        base.OnInitialized();
+        await Task.Delay(500);
+        _appointments = AppointmentService.GetAppointments(start, end).ToList();
     }
 
     Task OnAddingNewAppointment(DateTime start, DateTime end)
     {
-        //_appointments.Add(new AppointmentDto { Start = start, End = end.AddDays(7), Title = "A newly added appointment!", Color = "aqua" });
-        _appointments.Add(new AppointmentDto { Start = start, End = end.AddDays(7), JobId = "A newly added Job!", Color = "aqua" });
+        _appointments.Add(new AppointmentDto { Start = start, End = end, JobId = "A newly added Job!", Color = "aqua" });
         return Task.CompletedTask;
     }
 
+    async Task OnOverflowAppointmentClick(DateTime day)
+    {
+        var dialog = DialogService.Show<OverflowAppointmentDialog>($"Appointments for {day.ToShortDateString()}", new DialogParameters
+        {
+            ["Appointments"] = _appointments,
+            ["SelectedDate"] = day,
+        });
+        await dialog.Result;
+
+        StateHasChanged();
+    }
+
+    async Task OnAppointmentClicked(AppointmentDto app)
+    {
+        var dialog = DialogService.Show<EditAppointmentDialog>("Edit Appointment", new DialogParameters
+        {
+            ["Appointment"] = app,
+        });
+        await dialog.Result;
+
+        StateHasChanged();
+    }
+
+    Task HandleReschedule(AppointmentDto appointment, DateTime newStart, DateTime newEnd)
+    {
+        appointment.Start = newStart;
+        appointment.End = newEnd;
+
+        return Task.CompletedTask;
+    }
+
+    BlazScheduler<AppointmentDto> scheduler;
+    //private List<AppointmentDto> _appointments;
+
+    IList<AppointmentDto> _appointments = new List<AppointmentDto>
+    {
+        new AppointmentDto { Start = DateTime.Today.AddDays(-2), End = DateTime.Today.AddDays(-2), Text = "Birthday", JobId="JOB-101", Name="DENNIS CRUZ" },
+        new AppointmentDto { Start = DateTime.Today.AddDays(-11), End = DateTime.Today.AddDays(-10), Text = "Day off",JobId="JOB-102",Name="YOVID"  },
+        new AppointmentDto { Start = DateTime.Today.AddDays(-10), End = DateTime.Today.AddDays(-8), Text = "Work from home", JobId="JOB-103",Name="SURYA"  },
+        new AppointmentDto { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(12), Text = "Online meeting", JobId="JOB-104",Name="SHIV SINGH"  },
+        new AppointmentDto { Start = DateTime.Today.AddHours(10), End = DateTime.Today.AddHours(13), Text = "Skype call", JobId="JOB-105",Name="HIMASHU CHOUDHARY"  },
+        new AppointmentDto { Start = DateTime.Today.AddHours(14), End = DateTime.Today.AddHours(14).AddMinutes(30), Text = "Dentist appointment",
+        JobId="JOB-106",Name="PRIYANKA GUPTA" },
+        new AppointmentDto { Start = DateTime.Today.AddDays(1), End = DateTime.Today.AddDays(12), Text = "Vacation", JobId="JOB-107",Name="VAMYA"  },
+    };
+    protected override void OnInitialized()
+    {
+        //for (int i = 1; i < DateTime.DaysInMonth(DateTime.Today.Year, DateTime.Today.Month); i++)
+        //{
+        //    var app = new AppointmentDto
+        //    {
+        //        //Title = "Appointment",
+        //        JobId = "Job No:-" + i.ToString(),
+        //        Name = "Job No:-" + i.ToString(),
+        //        Start = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
+        //        End = new DateTime(DateTime.Today.Year, DateTime.Today.Month, i),
+        //        Color = "aqua",
+        //        Text = "Job No:-" + i.ToString()
+        //    };
+        //    _appointments.AddRange(Enumerable.Repeat(app, new Random().Next(0, 5)));
+        //}
+        base.OnInitialized();
+    }
     void ClearDay(DateTime day)
     {
-        _appointments.RemoveAll(x => x.Start.Date <= day && x.End.Date >= day.AddDays(7));
+        // _appointments.RemoveAll(x => x.Start.Date <= day && x.End.Date >= day.AddDays(7));
     }
     void AddApp(DateTime day)
     {
@@ -77,7 +138,52 @@
             <= 0 => "white",
         };
     }
-
     IEnumerable<AppointmentDto> GetAppointmentsForDay(DateTime day) =>
         _appointments.Where(x => x.Start.Date <= day && x.End.Date >= day.AddDays(7));
+
+    void OnSlotRender(SchedulerSlotRenderEventArgs args)
+    {
+        // Highlight today in month view
+        if (args.View.Text == "Month" && args.Start.Date == DateTime.Today)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+
+        // Highlight working hours (9-18)
+        if ((args.View.Text == "Week" || args.View.Text == "Day") && args.Start.Hour > 8 && args.Start.Hour < 19)
+        {
+            args.Attributes["style"] = "background: rgba(255,220,40,.2);";
+        }
+    }
+
+    async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    {
+        var dialog = DialogService.Show<OverflowAppointmentDialog>($"Appointments for {args.Start.ToLongDateString()}", new DialogParameters
+        {
+            ["Appointments"] = _appointments,
+            ["SelectedDate"] = args.Start,
+        });
+        await dialog.Result;
+
+    }
+
+    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AppointmentDto> args)
+    {
+        var dialog = DialogService.Show<EditAppointmentDialog>("Edit Appointment", new DialogParameters
+        {
+            ["Appointment"] = args.Data,
+        });
+        await dialog.Result;
+
+        StateHasChanged();
+
+
+    }
+
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AppointmentDto> args)
+    {
+        // Never call StateHasChanged in AppointmentRender - would lead to infinite loop
+
+
+    }
 }

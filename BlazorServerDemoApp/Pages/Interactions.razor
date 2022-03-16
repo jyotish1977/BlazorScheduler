@@ -21,47 +21,45 @@
 
 @code { private List<AppointmentDto> _appointments = new();
 
-            async Task OnRequestNewData(DateTime start, DateTime end)
-            {
-                await Task.Delay(500);
-                _appointments = AppointmentService.GetAppointments(start, end).ToList();
-            }
+    async Task OnRequestNewData(DateTime start, DateTime end)
+    {
+        await Task.Delay(500);
+        _appointments = AppointmentService.GetAppointments(start, end).ToList();
+    }
 
-            async Task OnAppointmentClicked(AppointmentDto app)
-            {
-                var dialog = DialogService.Show<EditAppointmentDialog>("Edit Appointment", new DialogParameters
-                {
-                    ["Appointment"] = app,
-                });
-                await dialog.Result;
+    async Task OnAppointmentClicked(AppointmentDto app)
+    {
+        var dialog = DialogService.Show<EditAppointmentDialog>("Edit Appointment", new DialogParameters
+        {
+            ["Appointment"] = app,
+        });
+        await dialog.Result;
 
-                StateHasChanged();
-            }
+        StateHasChanged();
+    }
 
-            Task OnAddingNewAppointment(DateTime start, DateTime end)
-            {
-                // POST to a database so it's persisted
-                //_appointments.Add(new AppointmentDto { Start = start, End = end, Title = "A newly added appointment!", Color = "aqua" });
-                _appointments.Add(new AppointmentDto { Start = start, End = end, JobId = "A newly added Job!", Color = "aqua" });
-                return Task.CompletedTask;
-            }
+    Task OnAddingNewAppointment(DateTime start, DateTime end)
+    {
+        _appointments.Add(new AppointmentDto { Start = start, End = end, JobId = "A newly added Job!", Color = "aqua" });
+        return Task.CompletedTask;
+    }
 
-            Task HandleReschedule(AppointmentDto appointment, DateTime newStart, DateTime newEnd)
-            {
-                appointment.Start = newStart;
-                appointment.End = newEnd;
+    Task HandleReschedule(AppointmentDto appointment, DateTime newStart, DateTime newEnd)
+    {
+        appointment.Start = newStart;
+        appointment.End = newEnd;
 
-                return Task.CompletedTask;
-            }
+        return Task.CompletedTask;
+    }
 
-            async Task OnOverflowAppointmentClick(DateTime day)
-            {
-                var dialog = DialogService.Show<OverflowAppointmentDialog>($"Appointments for {day.ToShortDateString()}", new DialogParameters
-                {
-                    ["Appointments"] = _appointments,
-                    ["SelectedDate"] = day,
-                });
-                await dialog.Result;
+    async Task OnOverflowAppointmentClick(DateTime day)
+    {
+        var dialog = DialogService.Show<OverflowAppointmentDialog>($"Appointments for {day.ToShortDateString()}", new DialogParameters
+        {
+            ["Appointments"] = _appointments,
+            ["SelectedDate"] = day,
+        });
+        await dialog.Result;
 
-                StateHasChanged();
-            } }
+        StateHasChanged();
+    } }

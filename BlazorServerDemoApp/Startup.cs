@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MudBlazor.Services;
 using DemoApp.Services;
+using BlazorScheduler;
 
 namespace BlazorServerDemoApp
 {
@@ -32,6 +33,7 @@ namespace BlazorServerDemoApp
             services.AddServerSideBlazor();
             services.AddSingleton<AppointmentService>();
             services.AddMudServices();
+            services.AddScoped<BlazDialogService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

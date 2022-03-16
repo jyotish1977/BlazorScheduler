@@ -1,0 +1,23 @@
+﻿@using System.IO
+
+@inject NavigationManager NavigationManager
+
+@code { [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? Name { get; set; }
+
+    [Parameter]
+    public string? Source { get; set; }
+
+    [Parameter]
+    public bool Heading { get; set; } = true;
+
+    [Parameter]
+    public bool Documentation { get; set; } = true;
+
+
+
+    [Parameter]
+    public IEnumerable<string> AdditionalSourceCodePages { get; set; } = Enumerable.Empty<string>(); }

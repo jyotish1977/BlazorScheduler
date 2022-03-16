@@ -25,6 +25,10 @@ namespace BlazorScheduler.Components
         /// <value>The text.</value>
         string Text { get; }
 
+        string JobId { get; }
+
+        string Name { get; }
+
         /// <summary>
         /// Returns a new date when the user clicks the next button of RadzenScheduler.
         /// </summary>

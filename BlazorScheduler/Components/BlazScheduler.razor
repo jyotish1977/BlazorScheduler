@@ -4,6 +4,8 @@
 @typeparam TItem
 @implements IScheduler
 
+@inject IJSRuntime jsRuntime
+
 @if (Visible)
 {
     <CascadingValue Value="@this">
@@ -20,7 +22,13 @@
             <div class="rz-scheduler-nav-views">
                 @foreach (var view in Views)
                 {
-                    <button class="@($"rz-button{(IsSelected(view)? " rz-state-active" : "")}")" @onclick=@(args => OnChangeView(view))><span>@view.Text</span></button>}
+                    <span>@view.JobId</span>
+                    <span>@view.Name</span>
+                    <button class="@($"rz-button{(IsSelected(view)? " rz-state-active" : "")}")" @onclick=@(args => OnChangeView(view))>
+
+                        <span>@view.Text</span>
+
+                    </button>}
             </div>
         </div>
         @SelectedView?.Render()

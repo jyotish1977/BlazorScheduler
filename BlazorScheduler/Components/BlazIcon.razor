@@ -1,0 +1,10 @@
+﻿@inherits BlazComponent
+
+@if (Visible)
+{
+<i @ref="@Element" style="@Style" @attributes="Attributes" class="@GetCssClass()" id="@GetId()">@((MarkupString)Icon)</i>}
+
+
+@code {
+
+}

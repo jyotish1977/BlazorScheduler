@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Linq.Dynamic.Core;
+using System.Collections.ObjectModel;
 
 namespace BlazorScheduler.Components
 {
@@ -75,6 +76,12 @@ namespace BlazorScheduler.Components
         public string TextProperty { get; set; }
 
         [Parameter]
+        public string JobIdProperty { get; set; }
+
+        [Parameter]
+        public string NameProperty { get; set; }
+
+        [Parameter]
         public EventCallback<SchedulerSlotSelectEventArgs> SlotSelect { get; set; }
 
 
@@ -133,7 +140,7 @@ namespace BlazorScheduler.Components
                 return Template(context);
             }
 
-            return builder => builder.AddContent(0, item.Text);
+            return builder => builder.AddContent(0, string.Format("{0},{1},{2}",item.JobId,item.Name,item.Text));
         }
 
         /// <inheritdoc />
@@ -252,6 +259,9 @@ namespace BlazorScheduler.Components
         Func<TItem, DateTime> endGetter;
         Func<TItem, string> textGetter;
 
+        Func<TItem, string> jobIdGetter;
+        Func<TItem, string> nameGetter;
+
         /// <inheritdoc />
         public override async Task SetParametersAsync(ParameterView parameters)
         {
@@ -288,6 +298,23 @@ namespace BlazorScheduler.Components
             {
                 textGetter = PropertyAccess.Getter<TItem, string>(parameters.GetValueOrDefault<string>(nameof(TextProperty)));
             }
+
+            if (parameters.DidParameterChange(nameof(TextProperty), TextProperty))
+            {
+                textGetter = PropertyAccess.Getter<TItem, string>(parameters.GetValueOrDefault<string>(nameof(TextProperty)));
+            }
+
+            if (parameters.DidParameterChange(nameof(JobIdProperty), JobIdProperty))
+            {
+                jobIdGetter = PropertyAccess.Getter<TItem, string>(parameters.GetValueOrDefault<string>(nameof(JobIdProperty)));
+            }
+
+
+            if (parameters.DidParameterChange(nameof(NameProperty), NameProperty))
+            {
+                nameGetter = PropertyAccess.Getter<TItem, string>(parameters.GetValueOrDefault<string>(nameof(NameProperty)));
+            }
+
 
             await base.SetParametersAsync(parameters);
 
@@ -333,7 +360,8 @@ namespace BlazorScheduler.Components
             appointments = Data.AsQueryable()
                                .Where(predicate, start, end)
                                .ToList()
-                               .Select(item => new AppointmentData { Start = startGetter(item), End = endGetter(item), Text = textGetter(item), Data = item });
+                               .Select(item => new AppointmentData { Start = startGetter(item), End = endGetter(item), 
+                                   Text = textGetter(item), JobId = jobIdGetter(item), Name = nameGetter(item), Data = item });
 
             return appointments;
         }
@@ -408,5 +436,20 @@ namespace BlazorScheduler.Components
         {
             return $"rz-scheduler";
         }
+        [Parameter] public RenderFragment Appointments { get; set; } = null!;
+
+        private readonly ObservableCollection<Appointment> _appointments = new();
+        private DotNetObjectReference<Scheduler> _objReference = null!;
+
+        [Parameter] public Func<DateTime, DateTime, Task>? OnRequestNewData { get; set; }
+        [Parameter] public Func<DateTime, DateTime, Task>? OnAddingNewAppointment { get; set; }
+        [Parameter] public Func<DateTime, Task>? OnOverflowAppointmentClick { get; set; }
+
+        [Parameter] public int MaxVisibleAppointmentsPerDay { get; set; } = 5;
+        [Parameter] public bool EnableDragging { get; set; } = true;
+        [Parameter] public bool EnableRescheduling { get; set; }
+        [Parameter] public string ThemeColor { get; set; } = "aqua";
+        public Appointment? DraggingAppointment { get; private set; }
+
     }
 }
